@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtualenv
+venv/
+.env
+
+# Node / frontend
+node_modules/
+
+# OS
+.DS_Store
+
+# Terraform (for later)
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# IDE
+.vscode/
+.idea/
