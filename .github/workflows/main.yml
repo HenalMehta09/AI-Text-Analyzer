@@ -1,0 +1,52 @@
+name: Build and Push Docker Images to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ap-south-1
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3️⃣ Login to ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 4️⃣ Build and push AI Service image
+      - name: Build and push AI Service image
+        run: |
+          docker build -t ai-service ./ai-service
+          docker tag ai-service:latest 191164476734.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/aitextanalyzer-ai-service-repository:latest
+          docker push 191164476734.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/aitextanalyzer-ai-service-repository:latest
+
+      # 5️⃣ Build and push Backend image
+      - name: Build and push Backend image
+        run: |
+          docker build -t backend ./backend
+          docker tag backend:latest 191164476734.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/aitextanalyzer-be-repository:latest
+          docker push 191164476734.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/aitextanalyzer-be-repository:latest
+
+      # 6️⃣ Build and push Frontend image
+      - name: Build and push Frontend image
+        run: |
+          docker build -t frontend ./frontend
+          docker tag frontend:latest 191164476734.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/aitextanalyzer-fe-repository:latest
+          docker push 191164476734.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/aitextanalyzer-fe-repository:latest
